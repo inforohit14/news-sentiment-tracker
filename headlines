@@ -1,0 +1,47 @@
+"""
+Real-Time News Sentiment Tracker
+
+Description:
+This script fetches real-time news headlines from Google News RSS,
+filters them based on user-defined keywords, performs sentiment analysis using
+TextBlob, and prints categorized results.
+
+Technologies Used:
+- Python 3.9+
+- feedparser
+- textblob
+"""
+
+import feedparser
+from textblob import TextBlob
+
+# -----------------------------
+# Step 1: Define keywords
+# -----------------------------
+keywords = ['inflation', 'AI', 'economy']
+
+# -----------------------------
+# Step 2: Parse RSS feed
+# -----------------------------
+rss_url = "https://news.google.com/rss"
+feed = feedparser.parse(rss_url)
+
+headlines = [entry.title for entry in feed.entries]
+
+# -----------------------------
+# Step 3: Filter by keywords
+# -----------------------------
+filtered = [h for h in headlines if any(k.lower() in h.lower() for k in keywords)]
+
+# -----------------------------
+# Step 4: Perform Sentiment Analysis
+# -----------------------------
+for h in filtered:
+    analysis = TextBlob(h)
+    polarity = analysis.sentiment.polarity
+    sentiment = (
+        "Positive" if polarity > 0 else
+        "Negative" if polarity < 0 else
+        "Neutral"
+    )
+    print(f"{sentiment.upper()} → {h}")
